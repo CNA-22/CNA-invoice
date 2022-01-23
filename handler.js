@@ -1,6 +1,17 @@
 'use strict';
 
-module.exports.hello = async (event) => {
+const axios = require('axios');
+
+const createPDF = (invoiceData) => {
+  console.log(invoiceData)
+}
+
+module.exports.createInvoice = async (event) => {
+
+  // form data
+  // pdf = createPDF()
+  // axios post pdf => email service
+  
   return {
     statusCode: 200,
     body: JSON.stringify(
