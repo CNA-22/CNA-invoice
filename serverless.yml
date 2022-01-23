@@ -24,12 +24,11 @@ provider:
   name: aws
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
+  region: eu-north-1
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+# Region => Stockholm
 
-# CHANGE REGION TO FX FRANKFURT
+
 
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
