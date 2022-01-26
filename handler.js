@@ -18,6 +18,11 @@ module.exports.createInvoice = async (event) => {
   const address = request.address
   const date = request.date
   
+  if(orderId != '' && customerId != '' && address != '' && date != ''){
+    createPDF(orderId, customerId, address, date)
+  
+  
+  }
 
   
   return {
