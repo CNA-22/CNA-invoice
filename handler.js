@@ -11,12 +11,20 @@ module.exports.createInvoice = async (event) => {
   // form data
   // pdf = createPDF()
   // axios post pdf => email service
+
+  const request = JSON.parse(event.body)
+  const orderId = request.order_id
+  const customerId = request.customer_id
+  const address = request.address
+  const date = request.date
+  
+
   
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
+        message: `EVENT ${event.body}`,
         input: event,
       },
       null,
