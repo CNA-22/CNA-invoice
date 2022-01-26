@@ -24,7 +24,7 @@ const createPDF = (orderId, customerId, address, date) => {
       },
       "information": {
           // Invoice number
-          "number": "2021.0001",
+          "number": Date(date).getTime() + "-"+customerId,
           // Invoice data
           "date": Date(date),
           // Invoice due date
