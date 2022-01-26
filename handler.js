@@ -3,15 +3,24 @@
 const axios = require('axios');
 const easyinvoice = require('easyinvoice');
 
+const dateString = (date) => {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+  const yyyy = today.getFullYear();
+    
+  return dd + '.' + mm + '.' + yyyy;
+}
+
 const createPDF = (orderId, customerId, address, date) => {
+    date = new Date(date)
+    let dueDate = date.setDate(date.getDate()+14)
     let data = {
-      
       "sender": {
-          "company": "Sample Corp",
-          "address": "Sample Street 123",
-          "zip": "1234 AB",
-          "city": "Sampletown",
-          "country": "Samplecountry"
+          "company": "Scalperz Oy",
+          "address": "Romgatan 5",
+          "zip": "00550",
+          "city": "Helsinki",
+          "country": "Finland"
       },
       // Your recipient
       "client": {
@@ -26,9 +35,9 @@ const createPDF = (orderId, customerId, address, date) => {
           // Invoice number
           "number": Date(date).getTime() + "-"+customerId,
           // Invoice data
-          "date": Date(date),
+          "date": dateString(date),
           // Invoice due date
-          "due-date": "31-12-2021"
+          "due-date": dateString(dueDate)
       },
       "products": [
           {
@@ -57,10 +66,8 @@ const createPDF = (orderId, customerId, address, date) => {
     };
 
     //Create your invoice! Easy!
-    easyinvoice.createInvoice(data, function (result) {
-      //The response will contain a base64 encoded PDF file
-      console.log('PDF base64 string: ', result.pdf);
-    });
+    const result = await easyinvoice.createInvoice(data);
+    return result.pdf
 }
 
 module.exports.createInvoice = async (event) => {
@@ -76,7 +83,6 @@ module.exports.createInvoice = async (event) => {
   const date = request.date
   
   if(orderId != '' && customerId != '' && address != '' && date != ''){
-    date = new Date(date)
     createPDF(orderId, customerId, address, date)
   }
 
