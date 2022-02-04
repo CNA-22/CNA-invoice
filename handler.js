@@ -1,79 +1,14 @@
 'use strict';
 
+const AWS = require('aws-sdk')
 const axios = require('axios');
-const easyinvoice = require('easyinvoice');
-
-const dateString = (date) => {
-  const dd = String(date.getDate()).padStart(2, '0');
-  const mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-  const yyyy = today.getFullYear();
-    
-  return dd + '.' + mm + '.' + yyyy;
-}
-
-const createPDF = (orderId, customerId, address, date) => {
-    date = new Date(date)
-    let dueDate = date.setDate(date.getDate()+14)
-    let data = {
-      "sender": {
-          "company": "Scalperz Oy",
-          "address": "Romgatan 5",
-          "zip": "00550",
-          "city": "Helsinki",
-          "country": "Finland"
-      },
-      // Your recipient
-      "client": {
-          "company": "Client Corp",
-          "address": {address},
-          "zip": "4567 CD",
-          "city": "Clientcity",
-          "country": "Clientcountry"
-          
-      },
-      "information": {
-          // Invoice number
-          "number": Date(date).getTime() + "-"+customerId,
-          // Invoice data
-          "date": dateString(date),
-          // Invoice due date
-          "due-date": dateString(dueDate)
-      },
-      "products": [
-          {
-              "quantity": 2,
-              "description": "Product 1",
-              "tax-rate": 6,
-              "price": 33.87
-          },
-          {
-              "quantity": 4.1,
-              "description": "Product 2",
-              "tax-rate": 6,
-              "price": 12.34
-          },
-          
-      ],
-      // The message you would like to display on the bottom of your invoice
-      "bottom-notice": "Kindly pay your invoice within 14 days.",
-      // Settings to customize your invoice
-      "settings": {
-          "currency": "EUR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
-          
-      },
-      // Translate your invoice to your preferred language
-      
-    };
-
-    //Create your invoice! Easy!
-    const result = await easyinvoice.createInvoice(data);
-    return result.pdf
-}
+const createPDF = require('utils.js')
 
 module.exports.createInvoice = async (event) => {
 
   // form data
   // pdf = createPDF()
+  // save to s3?
   // axios post pdf => email service
 
   const request = JSON.parse(event.body)
@@ -82,16 +17,21 @@ module.exports.createInvoice = async (event) => {
   const address = request.address
   const date = request.date
   
-  if(orderId != '' && customerId != '' && address != '' && date != ''){
-    createPDF(orderId, customerId, address, date)
+  if(typeof orderId != 'string' || typeof customerId != 'string' || typeof address != 'string' || typeof date != 'string'){
+    console.error('Validation Failed');
+    callback(new Error('Couldn\'t create invoice because of validation errors.'));
+    return;
   }
 
-  
+  invoicePdf = createPDF(orderId, customerId, address, date)
+  //conevrt base64 to pdf
+  //upload invoicepdf to s3 bucket
+
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: `EVENT ${event.body}`,
+        message: `Invoice sent`,
         input: event,
       },
       null,

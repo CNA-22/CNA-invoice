@@ -6,6 +6,7 @@
   "author": "Oscar Hackman <ohackman1@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.1068.0",
     "axios": "^0.25.0",
     "dotenv": "^14.2.0",
     "easyinvoice": "^2.2.6"
