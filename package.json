@@ -9,6 +9,7 @@
     "aws-sdk": "^2.1068.0",
     "axios": "^0.25.0",
     "dotenv": "^14.2.0",
-    "easyinvoice": "^2.2.6"
+    "easyinvoice": "^2.2.6",
+    "serverless-dotenv-plugin": "^3.12.2"
   }
 }

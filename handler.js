@@ -4,6 +4,8 @@ const AWS = require('aws-sdk')
 const axios = require('axios');
 const createPDF = require('utils.js')
 
+const S3 = AWS.S3()
+
 module.exports.createInvoice = async (event) => {
 
   // form data
@@ -26,6 +28,8 @@ module.exports.createInvoice = async (event) => {
   invoicePdf = createPDF(orderId, customerId, address, date)
   //conevrt base64 to pdf
   //upload invoicepdf to s3 bucket
+
+  //IAM role for upload to bucket in serverless
 
   return {
     statusCode: 200,

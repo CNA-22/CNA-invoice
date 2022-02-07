@@ -2,8 +2,8 @@ service: invoicing-service
 
 frameworkVersion: '2'
 
-# plugins:
-#   - serverless-dotenv-plugin
+ plugins:
+   - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -13,27 +13,15 @@ provider:
   httpApi:
     cors: true
 #     allowedOrigins:
-#       - https://quiet-meadow-01451.herokuapp.com
-
-
-# you can add statements to the Lambda function's IAM Role here
-#  iam:
-#    role:
-#      statements:
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:ListBucket"
-#          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:PutObject"
-#          Resource:
-#            Fn::Join:
-#              - ""
-#              - - "arn:aws:s3:::"
-#                - "Ref" : "ServerlessDeploymentBucket"
-#                - "/*"
-
+#       - ${env:ORDER_API}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:PutObject"
+          Resource: "arn:aws:s3:::${env:INVOICE_BUCKET}/*"
+       
 functions:
   createInvoice:
     handler: handler.createInvoice
@@ -44,18 +32,11 @@ functions:
 #      - s3: ${env:BUCKET}
 
 
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    invoiceBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: invoiceBucket
+
