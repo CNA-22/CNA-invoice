@@ -2,8 +2,8 @@ service: invoicing-service
 
 frameworkVersion: '2'
 
- plugins:
-   - serverless-dotenv-plugin
+plugins:
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -20,7 +20,7 @@ provider:
         - Effect: "Allow"
           Action:
             - "s3:PutObject"
-          Resource: "arn:aws:s3:::${env:INVOICE_BUCKET}/*"
+          Resource: "arn:aws:s3:::${env:BUCKET_NAME}/*"
        
 functions:
   createInvoice:
@@ -35,8 +35,8 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Resources:
-    invoiceBucket:
+    invoicebucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: invoiceBucket
+        BucketName: ${env:BUCKET_NAME}
 

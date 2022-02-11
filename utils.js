@@ -3,14 +3,15 @@ const easyinvoice = require('easyinvoice');
 const dateString = (date) => {
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
-    const yyyy = today.getFullYear();
+    const yyyy = date.getFullYear();
       
     return dd + '.' + mm + '.' + yyyy;
 }
 
-module.exports.createPDF = (orderId, customerId, address, date) => {
-    date = new Date(date)
-    let dueDate = date.setDate(date.getDate()+14)
+module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => {
+    let date = new Date(invoiceDate)
+    let due = new Date(invoiceDate)
+    let dueDate = due.setDate(due.getDate()+14)
     let data = {
       "sender": {
           "company": "Scalperz Oy",
@@ -30,11 +31,11 @@ module.exports.createPDF = (orderId, customerId, address, date) => {
       },
       "information": {
           // Invoice number
-          "number": Date(date).getTime() + "-"+customerId,
+          "number": String(date.getTime()) + "-"+customerId,
           // Invoice data
           "date": dateString(date),
           // Invoice due date
-          "due-date": dateString(dueDate)
+          "due-date": dateString(due)
       },
       "products": [
           {
@@ -61,5 +62,6 @@ module.exports.createPDF = (orderId, customerId, address, date) => {
 
     //Create your invoice! Easy!
     const result = await easyinvoice.createInvoice(data);
+    console.log('res', result.pdf)
     return result.pdf
 }

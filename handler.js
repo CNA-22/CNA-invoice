@@ -1,17 +1,11 @@
 'use strict';
 
-const AWS = require('aws-sdk')
-const axios = require('axios');
-const createPDF = require('utils.js')
+//const AWS = require('aws-sdk')
+const axios = require('axios')
+const { createPDF } = require('./utils')
 
-const S3 = AWS.S3()
-
+//const S3 = AWS.S3()
 module.exports.createInvoice = async (event) => {
-
-  // form data
-  // pdf = createPDF()
-  // save to s3?
-  // axios post pdf => email service
 
   const request = JSON.parse(event.body)
   const orderId = request.order_id
@@ -25,18 +19,17 @@ module.exports.createInvoice = async (event) => {
     return;
   }
 
-  invoicePdf = createPDF(orderId, customerId, address, date)
+  const invoicePdf = createPDF(orderId, customerId, address, date)
   //conevrt base64 to pdf
   //upload invoicepdf to s3 bucket
-
-  //IAM role for upload to bucket in serverless
+  //send url to email api
 
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
         message: `Invoice sent`,
-        input: event,
+        input: invoicePdf,
       },
       null,
       2
