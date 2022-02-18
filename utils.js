@@ -62,6 +62,6 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => 
 
     //Create your invoice! Easy!
     const result = await easyinvoice.createInvoice(data);
-    console.log('res', result.pdf)
+    
     return result.pdf
 }

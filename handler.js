@@ -18,12 +18,14 @@ module.exports.createInvoice = async (event) => {
     callback(new Error('Couldn\'t create invoice because of validation errors.'));
     return;
   }
+  // need to call other apis for data?
+  
 
-  const invoicePdf = createPDF(orderId, customerId, address, date)
+  const invoicePdf = await createPDF(orderId, customerId, address, date)
   //conevrt base64 to pdf
   //upload invoicepdf to s3 bucket
   //send url to email api
-
+  console.log('res', invoicePdf)
   return {
     statusCode: 200,
     body: JSON.stringify(
