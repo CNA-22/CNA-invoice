@@ -1,10 +1,13 @@
 'use strict';
 
-//const AWS = require('aws-sdk')
+const AWS = require('aws-sdk')
 const axios = require('axios')
 const { createPDF } = require('./utils')
 
-//const S3 = AWS.S3()
+const S3 = new AWS.S3()
+
+const BUCKET = process.env.BUCKET_NAME
+
 module.exports.createInvoice = async (event) => {
 
   const request = JSON.parse(event.body)
@@ -18,26 +21,34 @@ module.exports.createInvoice = async (event) => {
     callback(new Error('Couldn\'t create invoice because of validation errors.'));
     return;
   }
-  // need to call other apis for data?
-  
 
-  const invoicePdf = await createPDF(orderId, customerId, address, date)
-  //conevrt base64 to pdf
-  //upload invoicepdf to s3 bucket
-  //send url to email api
-  console.log('res', invoicePdf)
-  return {
+  const response = {
+    isBase64Encoded: false,
     statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: `Invoice sent`,
-        input: invoicePdf,
-      },
-      null,
-      2
-    ),
+    body: JSON.stringify({ message: "Successfully created invoice" }),
   };
+  // need to call other apis for data?
+  try {
+    const invoiceB64 = await createPDF(orderId, customerId, address, date)
+    //b64 decoder
+    const invoiceDecoded = Buffer.from(invoiceB64, 'base64')
+    const params = {
+      Bucket: BUCKET,
+      Key: `invoice/${orderId}`,
+      Body: invoiceDecoded,
+      ContentType: "application/pdf",
+    };
+    //upload invoicepdf to s3 bucket
+    const uploadResult = await S3.upload(params).promise();
+    response.body = JSON.stringify({ message: "Successfully uploaded invoice to S3", uploadResult });
+    //send url to email api
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+  } catch (error) {
+    console.error(e);
+    response.body = JSON.stringify({ message: "Invoice failed to upload", errorMessage: e });
+    response.statusCode = 500;
+  }
+
+  return response
+
 };
