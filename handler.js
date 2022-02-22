@@ -32,20 +32,31 @@ module.exports.createInvoice = async (event) => {
     const invoiceB64 = await createPDF(orderId, customerId, address, date)
     //b64 decoder
     const invoiceDecoded = Buffer.from(invoiceB64, 'base64')
+    // params for s3 upload 
     const params = {
       Bucket: BUCKET,
       Key: `invoice/${orderId}`,
       Body: invoiceDecoded,
       ContentType: "application/pdf",
-    };
+    }
     //upload invoicepdf to s3 bucket
+    // use signedUrl putobject instead?
     const uploadResult = await S3.upload(params).promise();
-    response.body = JSON.stringify({ message: "Successfully uploaded invoice to S3", uploadResult });
+    // params for signedUrl 
+    const urlParams = {
+      Bucket: BUCKET,
+      Key: `invoice/${orderId}`,
+      Expires: 3600, // one hour/ maybe change to one day = 86400
+    }
+    // create signedUrl to be sent to email api
+    const signedUrl = S3.getSignedUrl('getObject', urlParams)
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and got signed url', signedUrl})
     //send url to email api
+    
 
   } catch (error) {
     console.error(e);
-    response.body = JSON.stringify({ message: "Invoice failed to upload", errorMessage: e });
+    response.body = JSON.stringify({ message: "Invoice failed to upload", errorMessage: e })
     response.statusCode = 500;
   }
 
