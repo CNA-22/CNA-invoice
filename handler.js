@@ -1,8 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk')
-const axios = require('axios')
-const { createPDF } = require('./utils')
+const { createPDF, sendInvoice } = require('./utils')
 
 const S3 = new AWS.S3()
 
@@ -50,13 +49,13 @@ module.exports.createInvoice = async (event) => {
     }
     // create signedUrl to be sent to email api
     const signedUrl = S3.getSignedUrl('getObject', urlParams)
-    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and got signed url', signedUrl})
     //send url to email api
-    
+    const res = await sendInvoice(signedUrl, orderId)
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mmail including signed url', res: res})
 
-  } catch (error) {
-    console.error(e);
-    response.body = JSON.stringify({ message: "Invoice failed to upload", errorMessage: e })
+  } catch (err) {
+    console.error(err);
+    response.body = JSON.stringify({ message: "Invoice failed to upload", errorMessage: err })
     response.statusCode = 500;
   }
 

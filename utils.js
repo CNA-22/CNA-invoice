@@ -1,4 +1,9 @@
 const easyinvoice = require('easyinvoice');
+const axios = require('axios')
+
+const TEST_EMAIL = process.env.TEST_EMAIL
+const EMAIL_API = process.env.EMAIL_API
+const JWT_DUMMY = process.env.JWT_DUMMY
 
 const dateString = (date) => {
     const dd = String(date.getDate()).padStart(2, '0');
@@ -64,4 +69,24 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => 
     const result = await easyinvoice.createInvoice(data);
     
     return result.pdf
+}
+
+module.exports.sendInvoice = async (signedUrl, orderId) => {
+    try {
+      const headers = {
+        'Authorization': `Bearer ${JWT_DUMMY}`,
+        'Content-Type': 'application/json'
+      }
+      const mail = {
+        'to': 'hackmano@arcada.fi',
+        'subject': `Invoice on order: ${orderId}`,
+        'body': 'test'
+        }
+      const response = await axios.post(`${EMAIL_API}/sendmail`, mail, { headers: headers })
+      return response.data
+    } catch (err) {
+      console.error(err)
+      return err.message
+    }
+    
 }
