@@ -13,7 +13,7 @@ const dateString = (date) => {
     return dd + '.' + mm + '.' + yyyy;
 }
 
-module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => {
+module.exports.createPDF = async (orderId, customerId, address, invoiceDate, email, name, itemId, price) => {
     let date = new Date(invoiceDate)
     let due = new Date(invoiceDate)
     let dueDate = due.setDate(due.getDate()+14)
@@ -27,11 +27,9 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => 
       },
       // Your recipient
       "client": {
-          "company": "Client Corp",
-          "address": {address},
-          "zip": "4567 CD",
-          "city": "Clientcity",
-          "country": "Clientcountry"
+          "customer": customerId,
+          "email": email,
+          "address": address,
           
       },
       "information": {
@@ -44,18 +42,11 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => 
       },
       "products": [
           {
-              "quantity": 2,
-              "description": "Product 1",
-              "tax-rate": 6,
-              "price": 33.87
-          },
-          {
-              "quantity": 4.1,
-              "description": "Product 2",
-              "tax-rate": 6,
-              "price": 12.34
-          },
-          
+              "quantity": 1,
+              "name": name,
+              "tax-rate": 24,
+              "price": price
+          }
       ],
       // The message you would like to display on the bottom of your invoice
       "bottom-notice": "Kindly pay your invoice within 14 days.",
@@ -71,16 +62,16 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate) => 
     return result.pdf
 }
 
-module.exports.sendInvoice = async (signedUrl, orderId) => {
+module.exports.sendInvoice = async (signedUrl, orderId, token) => {
     try {
       const headers = {
-        'Authorization': `Bearer ${JWT_DUMMY}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
       const mail = {
-        'to': 'hackmano@arcada.fi',
+        'to': TEST_EMAIL,
         'subject': `Invoice on order: ${orderId}`,
-        'body': 'test'
+        'body': signedUrl
         }
       const response = await axios.post(`${EMAIL_API}/sendmail`, mail, { headers: headers })
       return response.data

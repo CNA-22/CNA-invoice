@@ -10,14 +10,19 @@ const BUCKET = process.env.BUCKET_NAME
 module.exports.createInvoice = async (event) => {
 
   const request = JSON.parse(event.body)
-  const orderId = request.order_id
-  const customerId = request.customer_id
+  const orderId = request.orderId
+  const customerId = request.customerNumber
   const address = request.address
   const date = request.date
+  const email = request.email
+  const name = request.name
+  const itemId = request.itemId
+  const token = request.token
+  const price = request.price
   
-  if(typeof orderId != 'string' || typeof customerId != 'string' || typeof address != 'string' || typeof date != 'string'){
+  if(typeof orderId != 'string' || typeof customerId != 'string' || typeof email != 'string' || typeof name != 'string' || typeof itemId != 'string' ){
     console.error('Validation Failed');
-    callback(new Error('Couldn\'t create invoice because of validation errors.'));
+    callback(null, 'Couldn\'t create invoice because of validation errors.');
     return;
   }
 
@@ -28,7 +33,7 @@ module.exports.createInvoice = async (event) => {
   };
   // need to call other apis for data?
   try {
-    const invoiceB64 = await createPDF(orderId, customerId, address, date)
+    const invoiceB64 = await createPDF(orderId, customerId, address, date, email, name, itemId, price)
     //b64 decoder
     const invoiceDecoded = Buffer.from(invoiceB64, 'base64')
     // params for s3 upload 
@@ -45,13 +50,13 @@ module.exports.createInvoice = async (event) => {
     const urlParams = {
       Bucket: BUCKET,
       Key: `invoice/${orderId}`,
-      Expires: 3600, // one hour/ maybe change to one day = 86400
+      Expires: 86400, // one day
     }
     // create signedUrl to be sent to email api
     const signedUrl = S3.getSignedUrl('getObject', urlParams)
     //send url to email api
-    const res = await sendInvoice(signedUrl, orderId)
-    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mmail including signed url', res: res})
+    const res = await sendInvoice(signedUrl, orderId, token)
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mail including signed url', res: res})
 
   } catch (err) {
     console.error(err);
