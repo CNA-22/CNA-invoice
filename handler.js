@@ -39,7 +39,7 @@ module.exports.createInvoice = async (event) => {
     // params for s3 upload 
     const params = {
       Bucket: BUCKET,
-      Key: `invoice/${orderId}`,
+      Key: `invoice/${customerId}/${orderId}`,
       Body: invoiceDecoded,
       ContentType: "application/pdf",
     }
@@ -49,14 +49,14 @@ module.exports.createInvoice = async (event) => {
     // params for signedUrl 
     const urlParams = {
       Bucket: BUCKET,
-      Key: `invoice/${orderId}`,
+      Key: `invoice/${customerId}/${orderId}`,
       Expires: 86400, // one day
     }
     // create signedUrl to be sent to email api
     const signedUrl = S3.getSignedUrl('getObject', urlParams)
     //send url to email api
-    const res = await sendInvoice(signedUrl, orderId, token)
-    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mail including signed url', res: res})
+    //const res = await sendInvoice(signedUrl, orderId, token)
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mail including signed url', res: signedUrl})
 
   } catch (err) {
     console.error(err);

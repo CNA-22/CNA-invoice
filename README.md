@@ -1,13 +1,18 @@
-# CNA-inventory
+# CNA-invoice
+This API is used for creating invoices in pdf format when a order is made in order service. The pdf will be uploaded to S3 and is accessible thru a link sent to email service
 
 # Docs
-
-/invoice
-
+POST endpoint for creating new invoice
+ - creates pdf
+ - sends presigned url to email service
+ 
+ /invoice
+ 
+```
  {
      order_id: string,
      customer_id: string,
      address:  string,
-     date: string  "2022-02-23"
+     date: Date
  }
-
+```
