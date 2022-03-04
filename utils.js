@@ -27,14 +27,13 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate, ema
       },
       // Your recipient
       "client": {
-          "customer": customerId,
-          "email": email,
+          "company": customerId,
           "address": address,
-          
+          "custom1": email,
       },
       "information": {
           // Invoice number
-          "number": String(date.getTime()) + "-"+customerId,
+          "number": String(date.getTime()),
           // Invoice data
           "date": dateString(date),
           // Invoice due date
@@ -45,7 +44,7 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate, ema
               "quantity": 1,
               "name": name,
               "tax-rate": 24,
-              "price": price
+              "price": parseInt(price) / 1.24
           }
       ],
       // The message you would like to display on the bottom of your invoice

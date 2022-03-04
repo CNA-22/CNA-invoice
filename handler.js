@@ -22,7 +22,6 @@ module.exports.createInvoice = async (event) => {
   
   if(typeof orderId != 'string' || typeof customerId != 'string' || typeof email != 'string' || typeof name != 'string' || typeof itemId != 'string' ){
     console.error('Validation Failed');
-    callback(null, 'Couldn\'t create invoice because of validation errors.');
     return;
   }
 
@@ -55,8 +54,8 @@ module.exports.createInvoice = async (event) => {
     // create signedUrl to be sent to email api
     const signedUrl = S3.getSignedUrl('getObject', urlParams)
     //send url to email api
-    //const res = await sendInvoice(signedUrl, orderId, token)
-    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3 and sent mail including signed url', res: signedUrl})
+    const res = await sendInvoice(signedUrl, orderId, token)
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3', res: res})
 
   } catch (err) {
     console.error(err);
