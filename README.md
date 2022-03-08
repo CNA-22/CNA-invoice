@@ -12,9 +12,9 @@ POST endpoint for creating new invoice
  
 ```
  {
-     order_id: string,
-     customer_id: string,
-     address:  string,
-     date: Date
+     "order_id": "string",
+     "customer_id": "string",
+     "address":  "string",
+     "date": "2022-03-03T21:59:08Z" | ISO 8601 UTC Date string
  }
 ```
