@@ -20,18 +20,20 @@ module.exports.createInvoice = async (event) => {
   const itemId = request.itemId
   const token = request.token
   const price = request.price
-  
-  //validation
-  if(typeof orderId != 'string' || typeof customerId != 'string' || typeof email != 'string' || typeof name != 'string' || typeof itemId != 'string' ){
-    console.error('Validation Failed');
-    return;
-  }
   // base response
   const response = {
     isBase64Encoded: false,
     statusCode: 200,
     body: JSON.stringify({ message: "Successfully created invoice" }),
   };
+  //validation
+  if(typeof orderId != 'string' || typeof customerId != 'string' || typeof email != 'string' || typeof name != 'string' || typeof itemId != 'string' ){
+    console.error('Validation Failed');
+    response.statusCode = 400
+    response.body = JSON.stringify({ message: "Request validation failed"})
+    return response;
+  }
+  
   // need to call other apis for data?
   try {
     //utils func, creates pdf
