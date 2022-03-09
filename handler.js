@@ -59,7 +59,7 @@ module.exports.createInvoice = async (event) => {
     const signedUrl = S3.getSignedUrl('getObject', urlParams)
     //send url to email api
     const res = await sendInvoice(signedUrl, orderId, token, email)
-    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3', link: signedUrl, res: res})
+    response.body = JSON.stringify({ message: 'Successfully uploaded invoice to s3', res: res})
 
   } catch (err) {
     console.error(err);
