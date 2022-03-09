@@ -14,9 +14,10 @@ const dateString = (date) => {
 }
 
 module.exports.createPDF = async (orderId, customerId, address, invoiceDate, email, name, itemId, price) => {
+    //date and duedate(+14)
     let date = new Date(invoiceDate)
     let due = new Date(invoiceDate)
-    let dueDate = due.setDate(due.getDate()+14)
+    due.setDate(due.getDate()+14)
     let data = {
       "sender": {
           "company": "Scalperz Oy",
@@ -55,20 +56,20 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate, ema
       },
     };
 
-    //Create your invoice! Easy!
+    //Create your invoice! 
     const result = await easyinvoice.createInvoice(data);
-    
+    // base64 encoded
     return result.pdf
 }
 
-module.exports.sendInvoice = async (signedUrl, orderId, token) => {
+module.exports.sendInvoice = async (signedUrl, orderId, token, email) => {
     try {
       const headers = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
       const mail = {
-        'to': TEST_EMAIL,
+        'to': email,
         'subject': `Invoice on order: ${orderId}`,
         'body': signedUrl
         }
