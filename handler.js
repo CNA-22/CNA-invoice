@@ -18,8 +18,7 @@ module.exports.createInvoice = async (event) => {
   const email = request.email
   const name = request.name
   const itemId = request.itemId
-  //const token = request.token
-  const token = JWT_TOKEN
+  const token = request.token
   const price = request.price
   
   //validation
