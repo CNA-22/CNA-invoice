@@ -28,9 +28,10 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate, ema
       },
       // Your recipient
       "client": {
-          "company": customerId,
           "address": address,
           "custom1": email,
+          "custom2": `Customer: ${customerId}`,
+          "custom3": `Order: ${orderId}`,
       },
       "information": {
           // Invoice number
@@ -43,7 +44,7 @@ module.exports.createPDF = async (orderId, customerId, address, invoiceDate, ema
       "products": [
           {
               "quantity": 1,
-              "name": name,
+              "description": name,
               "tax-rate": 24,
               "price": parseInt(price) / 1.24
           }
