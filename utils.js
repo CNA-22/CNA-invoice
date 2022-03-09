@@ -3,7 +3,6 @@ const axios = require('axios')
 
 const TEST_EMAIL = process.env.TEST_EMAIL
 const EMAIL_API = process.env.EMAIL_API
-const JWT_DUMMY = process.env.JWT_DUMMY
 
 const dateString = (date) => {
     const dd = String(date.getDate()).padStart(2, '0');
@@ -72,7 +71,8 @@ module.exports.sendInvoice = async (signedUrl, orderId, token, email) => {
       const mail = {
         'to': email,
         'subject': `Invoice on order: ${orderId}`,
-        'body': signedUrl
+        'body': `If link is broken: remove the space and ! from the link... ${signedUrl}`,
+        
         }
       const response = await axios.post(`${EMAIL_API}/sendmail`, mail, { headers: headers })
       return response.data
